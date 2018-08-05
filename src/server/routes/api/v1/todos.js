@@ -10,8 +10,16 @@ module.exports = app => {
                 res.send(doc);
             })
             .catch(err => {
-                console.log(err);
                 res.status(400).send(err)
+            })
+    });
+    app.get('/api/v1/todos', (req, res) => {
+        Todo.find()
+            .then(doc => {
+                res.send(doc);
+            })
+            .catch(err => {
+                res.status(400).send(err);
             })
     });
 };
