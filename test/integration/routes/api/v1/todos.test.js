@@ -144,24 +144,43 @@ describe('src/server/routes/api/v1/todos.js', () => {
     });
     describe('PATCH /api/v1/todos/:id', () => {
         test('should update a todo object', done => {
-           const id = todos[0]._id.toHexString();
-           const timestamp = new Date().getTime();
-           Todo.findById(id).then(todo => {
-               expect(todo).toMatchObject({ completed: false, completedAt: null });
-           });
-           request(app)
-               .patch(`/api/v1/todos/${id}`)
-               .send({ completed: true, completedAt: timestamp })
-               .expect(200)
-               .end((err) => {
-                   if (err) {
-                       done(err);
-                   }
-                   Todo.findById(id).then(todo => {
-                       expect(todo).toMatchObject({ completed: true, completedAt: timestamp });
-                       done();
-                   }).catch(e => done(e));
-               })
+            const id = todos[0]._id.toHexString();
+            Todo.findById(id).then(todo => {
+                expect(todo).toMatchObject({ text: 'First test todo' });
+            });
+            request(app)
+                .patch(`/api/v1/todos/${id}`)
+                .send({ text: 'Hello there!' })
+                .expect(200)
+                .end((err) => {
+                    if (err) {
+                        done(err);
+                    }
+                    Todo.findById(id).then(todo => {
+                        expect(todo).toMatchObject({ text: 'Hello there!' });
+                        done();
+                    }).catch(e => done(e));
+                })
+        });
+        test('should add a completedAt timestamp if completed is true', done => {
+            const id = todos[0]._id.toHexString();
+            Todo.findById(id).then(todo => {
+                expect(todo).toMatchObject({ completed: false, completedAt: null });
+            });
+            request(app)
+                .patch(`/api/v1/todos/${id}`)
+                .send({ completed: true })
+                .expect(200)
+                .end((err) => {
+                    if (err) {
+                        done(err);
+                    }
+                    Todo.findById(id).then(todo => {
+                        expect(todo.completed).toBe(true);
+                        expect(todo.completedAt).toBeDefined();
+                        done();
+                    }).catch(e => done(e));
+                })
         });
         test('should return a 404 if ID is not found', done => {
             const id = new ObjectID().toHexString();

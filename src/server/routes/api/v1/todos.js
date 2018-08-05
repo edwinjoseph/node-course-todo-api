@@ -1,3 +1,6 @@
+const pick = require('lodash/pick');
+const isBoolean = require('lodash/isBoolean');
+
 const Todo = require('../../../models/todo');
 const idValidator = require('../../../middleware/id-validator');
 
@@ -50,7 +53,15 @@ const deleteTodoById = (req, res) => {
         });
 };
 const updateTodoById = (req, res) => {
-    Todo.findByIdAndUpdate(req.params.id, req.body)
+    const body = pick(req.body, ['text', 'completed']);
+
+    if (isBoolean(body.completed) && body.completed) {
+        body.completedAt = new Date().getTime();
+    } else {
+        body.completedAt = null;
+    }
+
+    Todo.findByIdAndUpdate(req.params.id, { $set: body }, { new: true })
         .then(todo => {
             if (!todo) {
                 return res.status(404).send({ error: { message: 'Todo not found.' }})
