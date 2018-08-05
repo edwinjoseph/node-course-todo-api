@@ -13,6 +13,14 @@ MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true })
                 console.log('Unable to fetch todos.', err);
             });
 
+        // db.collection('Users').insertOne({ firstname: 'Kezia', lastname: 'Joseph', age: 28, location: 'London' })
+        //     .then(res => {
+        //         console.log(res.ops[0]._id.getTimestamp())
+        //     })
+        //     .catch(err => {
+        //         console.log('Unable to insert user.', err);
+        //     });
+
         client.close();
     })
     .catch((err) => {
