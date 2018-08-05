@@ -85,7 +85,7 @@ describe('src/server/routes/api/v1/todos.js', () => {
                })
                .end(done)
         });
-        test('should return a error if ID is not found', done => {
+        test('should return a 404 if ID is not found', done => {
             const id = new ObjectID().toHexString();
             request(app)
                 .get(`/api/v1/todos/${id}`)
@@ -95,7 +95,7 @@ describe('src/server/routes/api/v1/todos.js', () => {
                 })
                 .end(done)
         });
-        test('should return a error if ID is not valid', done => {
+        test('should return a 400 if ID is not valid', done => {
             request(app)
                 .get(`/api/v1/todos/123`)
                 .expect(400)
