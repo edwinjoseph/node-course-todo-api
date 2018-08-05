@@ -1,16 +1,25 @@
 const request = require('supertest');
-
+const { ObjectID } = require('mongodb');
 const app = require('../../../../../src/server/server.js');
 const Todo = require('../../../../../src/server/models/todo');
 
-const todos = [{ text: "First test todo" }, { text: "Second test todo" }];
-
+const todos = [
+    {
+        _id: new ObjectID(),
+        text: "First test todo"
+    },
+    {
+        _id: new ObjectID(),
+        text: "Second test todo"
+    }
+];
 
 beforeEach(done => {
    Todo.remove({}).then(() => {
        return Todo.insertMany(todos);
    }).then(() => done());
 });
+
 describe('src/server/routes/api/v1/todos.js', () => {
     describe('POST /api/v1/todos', () => {
         test('should create a new todo', done => {
@@ -62,5 +71,38 @@ describe('src/server/routes/api/v1/todos.js', () => {
                })
                .end(done)
        })
+    });
+    describe('GET /api/v1/todos/:id', () => {
+        test('should return a todo object', done => {
+           const id = todos[0]._id.toHexString();
+           request(app)
+               .get(`/api/v1/todos/${id}`)
+               .expect(200)
+               .expect(res => {
+                   expect(res.body.todo).toMatchObject({
+                       text: 'First test todo'
+                   });
+               })
+               .end(done)
+        });
+        test('should return a error if ID is not found', done => {
+            const id = new ObjectID().toHexString();
+            request(app)
+                .get(`/api/v1/todos/${id}`)
+                .expect(404)
+                .expect(res => {
+                    expect(res.body.error.message).toBe('Todo not found.');
+                })
+                .end(done)
+        });
+        test('should return a error if ID is not valid', done => {
+            request(app)
+                .get(`/api/v1/todos/123`)
+                .expect(400)
+                .expect(res => {
+                    expect(res.body.error.message).toBe('Invalid ID used.');
+                })
+                .end(done)
+        });
     });
 });
