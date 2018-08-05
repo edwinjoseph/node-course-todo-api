@@ -15,8 +15,10 @@ module.exports = app => {
     });
     app.get('/api/v1/todos', (req, res) => {
         Todo.find()
-            .then(doc => {
-                res.send(doc);
+            .then(todos => {
+                res.send({
+                    todos
+                });
             })
             .catch(err => {
                 res.status(400).send(err);
