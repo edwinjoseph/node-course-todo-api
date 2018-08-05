@@ -14,7 +14,6 @@ const createTodo = (req, res) => {
             res.status(400).send(err)
         })
 };
-
 const getTodos = (req, res) => {
     Todo.find()
         .then(todos => {
@@ -26,14 +25,11 @@ const getTodos = (req, res) => {
             res.status(400).send(err);
         })
 };
-
 const getTodoById = (req, res) => {
-    const id = req.params.id;
-
-    Todo.findById(id)
+    Todo.findById(req.params.id)
         .then(todo => {
             if (!todo) {
-                return res.status(404).send({error: { message: 'Todo not found.' }})
+                return res.status(404).send({ error: { message: 'Todo not found.' }})
             }
             res.send({todo});
         })
@@ -41,13 +37,21 @@ const getTodoById = (req, res) => {
             res.status(500).send(err);
         });
 };
-
 const deleteTodoById = (req, res) => {
-    const id = req.params.id;
-
-    Todo.findByIdAndRemove(id)
+    Todo.findByIdAndRemove(req.params.id)
         .then(todo => {
-            console.log(todo);
+            if (!todo) {
+                return res.status(404).send({ error: { message: 'Todo not found.' }})
+            }
+            res.send({ todo });
+        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
+};
+const updateTodoById = (req, res) => {
+    Todo.findByIdAndUpdate(req.params.id, req.body)
+        .then(todo => {
             if (!todo) {
                 return res.status(404).send({ error: { message: 'Todo not found.' }})
             }
@@ -73,8 +77,8 @@ module.exports = app => {
         idValidator,
         deleteTodoById
     );
-    app.delete('/api/v1/todos/:id',
+    app.patch('/api/v1/todos/:id',
         idValidator,
-        deleteTodoById
+        updateTodoById
     );
 };
