@@ -105,4 +105,82 @@ describe('src/server/routes/api/v1/todos.js', () => {
                 .end(done)
         });
     });
+    describe('DELETE /api/v1/todos/:id', () => {
+        test('should delete a todo object', done => {
+           const id = todos[0]._id.toHexString();
+           request(app)
+               .delete(`/api/v1/todos/${id}`)
+               .expect(200)
+               .end((err) => {
+                   if (err) {
+                       done(err);
+                   }
+                   Todo.findById(id)
+                       .then(todo => {
+                           expect(todo).toBeNull();
+                           done();
+                       }).catch(e => done(e));
+               })
+        });
+        test('should return a 404 if ID is not found', done => {
+            const id = new ObjectID().toHexString();
+            request(app)
+                .delete(`/api/v1/todos/${id}`)
+                .expect(404)
+                .expect(res => {
+                    expect(res.body.error.message).toBe('Todo not found.');
+                })
+                .end(done)
+        });
+        test('should return a 400 if ID is not valid', done => {
+            request(app)
+                .delete(`/api/v1/todos/123`)
+                .expect(400)
+                .expect(res => {
+                    expect(res.body.error.message).toBe('Invalid ID used.');
+                })
+                .end(done)
+        });
+    });
+    describe('PATCH /api/v1/todos/:id', () => {
+        test('should update a todo object', done => {
+           const id = todos[0]._id.toHexString();
+           const timestamp = new Date().getTime();
+           Todo.findById(id).then(todo => {
+               expect(todo).toMatchObject({ completed: false, completedAt: null });
+           });
+           request(app)
+               .patch(`/api/v1/todos/${id}`)
+               .send({ completed: true, completedAt: timestamp })
+               .expect(200)
+               .end((err) => {
+                   if (err) {
+                       done(err);
+                   }
+                   Todo.findById(id).then(todo => {
+                       expect(todo).toMatchObject({ completed: true, completedAt: timestamp });
+                       done();
+                   }).catch(e => done(e));
+               })
+        });
+        test('should return a 404 if ID is not found', done => {
+            const id = new ObjectID().toHexString();
+            request(app)
+                .patch(`/api/v1/todos/${id}`)
+                .expect(404)
+                .expect(res => {
+                    expect(res.body.error.message).toBe('Todo not found.');
+                })
+                .end(done)
+        });
+        test('should return a 400 if ID is not valid', done => {
+            request(app)
+                .patch(`/api/v1/todos/123`)
+                .expect(400)
+                .expect(res => {
+                    expect(res.body.error.message).toBe('Invalid ID used.');
+                })
+                .end(done)
+        });
+    });
 });
