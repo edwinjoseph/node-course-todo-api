@@ -182,6 +182,26 @@ describe('src/server/routes/api/v1/todos.js', () => {
                     }).catch(e => done(e));
                 })
         });
+        test('should clear the completedAt timestamp if completed is false', done => {
+            const id = todos[0]._id.toHexString();
+            Todo.findById(id).then(todo => {
+                expect(todo).toMatchObject({ completed: false, completedAt: null });
+            });
+            request(app)
+                .patch(`/api/v1/todos/${id}`)
+                .send({ completed: true })
+                .expect(200)
+                .end((err) => {
+                    if (err) {
+                        done(err);
+                    }
+                    Todo.findById(id).then(todo => {
+                        expect(todo.completed).toBe(true);
+                        expect(todo.completedAt).toBeDefined();
+                        done();
+                    }).catch(e => done(e));
+                })
+        });
         test('should return a 404 if ID is not found', done => {
             const id = new ObjectID().toHexString();
             request(app)

@@ -1,9 +1,19 @@
 const pick = require('lodash/pick');
 const isBoolean = require('lodash/isBoolean');
 
-const Todo = require('../../../models/todo');
-const idValidator = require('../../../middleware/id-validator');
+const Todo = require('../../../../models/todo');
 
+const getTodos = (req, res) => {
+    Todo.find()
+        .then(todos => {
+            res.send({
+                todos
+            });
+        })
+        .catch(err => {
+            res.status(400).send(err);
+        })
+};
 const createTodo = (req, res) => {
     const todo = new Todo({
         text: req.body.text
@@ -17,18 +27,7 @@ const createTodo = (req, res) => {
             res.status(400).send(err)
         })
 };
-const getTodos = (req, res) => {
-    Todo.find()
-        .then(todos => {
-            res.send({
-                todos
-            });
-        })
-        .catch(err => {
-            res.status(400).send(err);
-        })
-};
-const getTodoById = (req, res) => {
+const getTodo = (req, res) => {
     Todo.findById(req.params.id)
         .then(todo => {
             if (!todo) {
@@ -40,7 +39,7 @@ const getTodoById = (req, res) => {
             res.status(500).send(err);
         });
 };
-const deleteTodoById = (req, res) => {
+const deleteTodo = (req, res) => {
     Todo.findByIdAndRemove(req.params.id)
         .then(todo => {
             if (!todo) {
@@ -52,7 +51,7 @@ const deleteTodoById = (req, res) => {
             res.status(500).send(err);
         });
 };
-const updateTodoById = (req, res) => {
+const updateTodo = (req, res) => {
     const body = pick(req.body, ['text', 'completed']);
 
     if (isBoolean(body.completed) && body.completed) {
@@ -73,23 +72,10 @@ const updateTodoById = (req, res) => {
         });
 };
 
-module.exports = app => {
-    app.post('/api/v1/todos',
-        createTodo
-    );
-    app.get('/api/v1/todos',
-        getTodos
-    );
-    app.get('/api/v1/todos/:id',
-        idValidator,
-        getTodoById
-    );
-    app.delete('/api/v1/todos/:id',
-        idValidator,
-        deleteTodoById
-    );
-    app.patch('/api/v1/todos/:id',
-        idValidator,
-        updateTodoById
-    );
+module.exports = {
+    getTodos,
+    createTodo,
+    getTodo,
+    deleteTodo,
+    updateTodo
 };
