@@ -1,5 +1,5 @@
 const { getTodos, createTodo, getTodo, deleteTodo, updateTodo } = require('./todos.js');
-const idValidator = require('../../../../middleware/id-validator');
+const idValidator = require('../../../middleware/id-validator');
 
 module.exports = app => {
     app.get('/api/v1/todos',

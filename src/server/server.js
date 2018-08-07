@@ -1,15 +1,7 @@
-require('./system/init');
+'use strict';
+const app = require('./app');
+const port = process.env.PORT;
 
-const PORT = process.env.PORT || 3000;
-
-const express = require('express');
-const app = express();
-
-require('./express/configure-middleware')(app);
-require('./routes/api/v1/todos')(app);
-
-app.listen(PORT, () => {
-    console.log(`Started on port ${PORT}.`);
+app.listen(port, () => {
+    console.log(`Started on port ${port}.`);
 });
-
-module.exports = app;

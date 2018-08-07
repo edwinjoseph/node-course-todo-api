@@ -1,7 +1,7 @@
 const pick = require('lodash/pick');
 const isBoolean = require('lodash/isBoolean');
 
-const Todo = require('../../../../models/todo');
+const Todo = require('../../../models/todo');
 
 const getTodos = (req, res) => {
     Todo.find()

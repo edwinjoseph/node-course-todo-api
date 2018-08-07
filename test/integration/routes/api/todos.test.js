@@ -1,7 +1,9 @@
 const request = require('supertest');
 const { ObjectID } = require('mongodb');
-const app = require('../../../../../src/server/server.js');
-const Todo = require('../../../../../src/server/models/todo');
+
+const mongoose = require('../../../../src/server/db/mongoose');
+const app = require('../../../../src/server/app');
+const Todo = require('../../../../src/server/models/todo');
 
 const todos = [
     {
@@ -20,11 +22,14 @@ beforeEach(done => {
    }).then(() => done());
 });
 
-describe('src/server/routes/api/v1/todos.js', () => {
+afterAll(done => {
+    mongoose.close(done);
+});
+
+describe('src/server/routes/api/todos.js', () => {
     describe('POST /api/v1/todos', () => {
         test('should create a new todo', done => {
             const text = 'Todo text';
-
             request(app)
                 .post('/api/v1/todos')
                 .send({ text })
@@ -95,12 +100,12 @@ describe('src/server/routes/api/v1/todos.js', () => {
                 })
                 .end(done)
         });
-        test('should return a 400 if ID is not valid', done => {
+        test('should return a 404 if ID is not valid', done => {
             request(app)
                 .get(`/api/v1/todos/123`)
-                .expect(400)
+                .expect(404)
                 .expect(res => {
-                    expect(res.body.error.message).toBe('Invalid ID used.');
+                    expect(res.body.error.message).toBe('Todo not found.');
                 })
                 .end(done)
         });
@@ -132,12 +137,12 @@ describe('src/server/routes/api/v1/todos.js', () => {
                 })
                 .end(done)
         });
-        test('should return a 400 if ID is not valid', done => {
+        test('should return a 404 if ID is not valid', done => {
             request(app)
                 .delete(`/api/v1/todos/123`)
-                .expect(400)
+                .expect(404)
                 .expect(res => {
-                    expect(res.body.error.message).toBe('Invalid ID used.');
+                    expect(res.body.error.message).toBe('Todo not found.');
                 })
                 .end(done)
         });
@@ -212,12 +217,12 @@ describe('src/server/routes/api/v1/todos.js', () => {
                 })
                 .end(done)
         });
-        test('should return a 400 if ID is not valid', done => {
+        test('should return a 404 if ID is not valid', done => {
             request(app)
                 .patch(`/api/v1/todos/123`)
-                .expect(400)
+                .expect(404)
                 .expect(res => {
-                    expect(res.body.error.message).toBe('Invalid ID used.');
+                    expect(res.body.error.message).toBe('Todo not found.');
                 })
                 .end(done)
         });
