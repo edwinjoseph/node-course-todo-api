@@ -1,0 +1,33 @@
+{
+  "name": "website-v2",
+  "scripts": {},
+  "env": {},
+  "formation": {},
+  "addons": [],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "environments": {
+    "test": {
+      "formation": {
+        "test": {
+          "quantity": 1,
+          "size": "standard-2x"
+        }
+      },
+      "scripts": {
+        "test": "yarn test"
+      },
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "buildpacks": [
+        {
+          "url": "heroku/nodejs"
+        }
+      ]
+    }
+  }
+}
