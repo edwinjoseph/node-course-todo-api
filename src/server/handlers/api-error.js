@@ -4,7 +4,9 @@ module.exports = (key, code, errors = {}) => {
       ERRNOAUTH: "Invalid access token.",
       ERRNOTODO: "Unable to find todo item.",
       ERRNOCREATE: "Unable to create todo item.",
-      ERREMAILEXISTS: "The email you used already exists."
+      ERREMAILEXISTS: "The email you used already exists.",
+      ERREMAILREQUIRED: "You must supply an email address",
+      ERRPASSREQUIRED: "You must supply a password"
   };
 
   return {

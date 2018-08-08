@@ -4,24 +4,10 @@ const { ObjectID } = require('mongodb');
 const mongoose = require('../../../../src/server/db/mongoose');
 const app = require('../../../../src/server/app');
 const Todo = require('../../../../src/server/models/todo');
+const { todos, populateTodos } = require('../../seed');
 const createError = require('../../../../src/server/handlers/api-error');
 
-const todos = [
-    {
-        _id: new ObjectID(),
-        text: "First test todo"
-    },
-    {
-        _id: new ObjectID(),
-        text: "Second test todo"
-    }
-];
-
-beforeEach(done => {
-   Todo.remove({}).then(() => {
-       return Todo.insertMany(todos);
-   }).then(() => done());
-});
+beforeEach(populateTodos);
 
 afterAll(done => {
     mongoose.close(done);

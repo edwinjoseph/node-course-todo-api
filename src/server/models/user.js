@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const { isEmail } = require('validator');
 const jwt = require('jsonwebtoken');
 const pick = require('lodash/pick');
+const reduce = require('lodash/reduce');
 
 const createError = require('../handlers/api-error');
 
@@ -85,10 +86,28 @@ UserSchema.pre('save', function (next) {
     next();
 });
 UserSchema.post('save', function (err, res, next) {
-    if (err.name === 'MongoError' && err.code === 11000) {
-        next(createError('email', 'ERREMAILEXISTS'));
-    } else {
-        next()
+    switch (err.name) {
+        case 'MongoError': {
+            if (err.code === 11000) {
+                next(createError('email', 'ERREMAILEXISTS'));
+            }
+            break;
+        }
+        case 'ValidationError': {
+            const codes = {
+                email: 'ERREMAILREQUIRED',
+                password: 'ERRPASSREQUIRED'
+            };
+            const errors = reduce(err.errors, (result, value, key) => {
+                const code = codes[key] || 'ERR';
+                return createError(key, code, result.errors)
+            }, {});
+            next(errors);
+            break;
+        }
+        default: {
+            next()
+        }
     }
 });
 
