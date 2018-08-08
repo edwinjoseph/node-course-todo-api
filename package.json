@@ -5,16 +5,20 @@
   "license": "MIT",
   "scripts": {
     "start": "node src/server/server.js",
+    "start:watch": "nodemon src/server/server.js",
     "test": "NODE_ENV=test jest",
     "test:watch": "NODE_ENV=test jest --watch"
   },
   "dependencies": {
+    "bcrypt": "^3.0.0",
     "body-parser": "^1.18.3",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.10",
     "mongodb": "^3.1.1",
-    "mongoose": "^5.2.6"
+    "mongoose": "^5.2.6",
+    "validator": "^10.5.0"
   },
   "devDependencies": {
     "jest": "^23.4.2",
