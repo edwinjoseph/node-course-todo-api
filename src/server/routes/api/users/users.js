@@ -18,6 +18,11 @@ const createUser = (req, res) => {
         });
 };
 
+const getUser = (req, res) => {
+    res.send(req.user);
+};
+
 module.exports = {
     createUser,
+    getUser
 };
