@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 const { isEmail } = require('validator');
 const jwt = require('jsonwebtoken');
 const pick = require('lodash/pick');
@@ -54,6 +55,16 @@ UserSchema.methods = {
     }
 };
 
+UserSchema.pre('save', function (next) {
+    const user = this;
+    if (user.isModified('password')) {
+        return bcrypt.hash(user.password, 10)
+            .then(res => {
+                user.password = res;
+            });
+    }
+    next();
+});
 UserSchema.post('save', function (err, res, next) {
     if (err.name === 'MongoError' && err.code === 11000) {
         next(createError('email', 'ERREMAILEXISTS'));
