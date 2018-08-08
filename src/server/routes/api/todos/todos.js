@@ -2,6 +2,7 @@ const pick = require('lodash/pick');
 const isBoolean = require('lodash/isBoolean');
 
 const Todo = require('../../../models/todo');
+const createError = require('../../../handlers/api-error');
 
 const getTodos = (req, res) => {
     Todo.find()
@@ -10,8 +11,8 @@ const getTodos = (req, res) => {
                 todos
             });
         })
-        .catch(err => {
-            res.status(400).send(err);
+        .catch(() => {
+            res.status(400).send(createError('base', 'ERRNOCREATE'));
         })
 };
 const createTodo = (req, res) => {
@@ -23,15 +24,15 @@ const createTodo = (req, res) => {
         .then(doc => {
             res.send(doc);
         })
-        .catch(err => {
-            res.status(400).send(err)
+        .catch(() => {
+            res.status(400).send(createError('base', 'ERRNOCREATE'));
         })
 };
 const getTodo = (req, res) => {
     Todo.findById(req.params.id)
         .then(todo => {
             if (!todo) {
-                return res.status(404).send({ error: { message: 'Todo not found.' }})
+                return res.status(400).send(createError('base', 'ERRNOTODO'));
             }
             res.send({todo});
         })
@@ -43,7 +44,7 @@ const deleteTodo = (req, res) => {
     Todo.findByIdAndRemove(req.params.id)
         .then(todo => {
             if (!todo) {
-                return res.status(404).send({ error: { message: 'Todo not found.' }})
+                return res.status(400).send(createError('base', 'ERRNOTODO'));
             }
             res.send({ todo });
         })
@@ -63,7 +64,7 @@ const updateTodo = (req, res) => {
     Todo.findByIdAndUpdate(req.params.id, { $set: body }, { new: true })
         .then(todo => {
             if (!todo) {
-                return res.status(404).send({ error: { message: 'Todo not found.' }})
+                return res.status(400).send(createError('base', 'ERRNOTODO'));
             }
             res.send({ todo });
         })

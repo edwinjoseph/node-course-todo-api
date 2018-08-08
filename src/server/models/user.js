@@ -3,6 +3,8 @@ const { isEmail } = require('validator');
 const jwt = require('jsonwebtoken');
 const pick = require('lodash/pick');
 
+const createError = require('../handlers/api-error');
+
 const UserSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -51,6 +53,14 @@ UserSchema.methods = {
         });
     }
 };
+
+UserSchema.post('save', function (err, res, next) {
+    if (err.name === 'MongoError' && err.code === 11000) {
+        next(createError('email', 'ERREMAILEXISTS'));
+    } else {
+        next()
+    }
+});
 
 const User = mongoose.model('user', UserSchema);
 
