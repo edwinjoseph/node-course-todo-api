@@ -4,6 +4,7 @@ const { ObjectID } = require('mongodb');
 const mongoose = require('../../../../src/server/db/mongoose');
 const app = require('../../../../src/server/app');
 const Todo = require('../../../../src/server/models/todo');
+const createError = require('../../../../src/server/handlers/api-error');
 
 const todos = [
     {
@@ -54,6 +55,9 @@ describe('src/server/routes/api/todos.js', () => {
                 .post('/api/v1/todos')
                 .send({})
                 .expect(400)
+                .expect(res => {
+                    expect(res.body).toMatchObject(createError('base', 'ERRNOCREATE'));
+                })
                 .end((err) => {
                     if (err) {
                         done(err);
@@ -96,7 +100,7 @@ describe('src/server/routes/api/todos.js', () => {
                 .get(`/api/v1/todos/${id}`)
                 .expect(404)
                 .expect(res => {
-                    expect(res.body.error.message).toBe('Todo not found.');
+                    expect(res.body).toMatchObject(createError('base', 'ERRNOTODO'));
                 })
                 .end(done)
         });
@@ -105,7 +109,7 @@ describe('src/server/routes/api/todos.js', () => {
                 .get(`/api/v1/todos/123`)
                 .expect(404)
                 .expect(res => {
-                    expect(res.body.error.message).toBe('Todo not found.');
+                    expect(res.body).toMatchObject(createError('base', 'ERRNOTODO'));
                 })
                 .end(done)
         });
@@ -133,7 +137,7 @@ describe('src/server/routes/api/todos.js', () => {
                 .delete(`/api/v1/todos/${id}`)
                 .expect(404)
                 .expect(res => {
-                    expect(res.body.error.message).toBe('Todo not found.');
+                    expect(res.body).toMatchObject(createError('base', 'ERRNOTODO'));
                 })
                 .end(done)
         });
@@ -142,7 +146,7 @@ describe('src/server/routes/api/todos.js', () => {
                 .delete(`/api/v1/todos/123`)
                 .expect(404)
                 .expect(res => {
-                    expect(res.body.error.message).toBe('Todo not found.');
+                    expect(res.body).toMatchObject(createError('base', 'ERRNOTODO'));
                 })
                 .end(done)
         });
@@ -213,7 +217,7 @@ describe('src/server/routes/api/todos.js', () => {
                 .patch(`/api/v1/todos/${id}`)
                 .expect(404)
                 .expect(res => {
-                    expect(res.body.error.message).toBe('Todo not found.');
+                    expect(res.body).toMatchObject(createError('base', 'ERRNOTODO'));
                 })
                 .end(done)
         });
@@ -222,7 +226,7 @@ describe('src/server/routes/api/todos.js', () => {
                 .patch(`/api/v1/todos/123`)
                 .expect(404)
                 .expect(res => {
-                    expect(res.body.error.message).toBe('Todo not found.');
+                    expect(res.body).toMatchObject(createError('base', 'ERRNOTODO'));
                 })
                 .end(done)
         });

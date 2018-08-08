@@ -32,7 +32,7 @@ const getTodo = (req, res) => {
     Todo.findById(req.params.id)
         .then(todo => {
             if (!todo) {
-                return res.status(400).send(createError('base', 'ERRNOTODO'));
+                return res.status(404).send(createError('base', 'ERRNOTODO'));
             }
             res.send({todo});
         })
@@ -44,7 +44,7 @@ const deleteTodo = (req, res) => {
     Todo.findByIdAndRemove(req.params.id)
         .then(todo => {
             if (!todo) {
-                return res.status(400).send(createError('base', 'ERRNOTODO'));
+                return res.status(404).send(createError('base', 'ERRNOTODO'));
             }
             res.send({ todo });
         })
@@ -64,7 +64,7 @@ const updateTodo = (req, res) => {
     Todo.findByIdAndUpdate(req.params.id, { $set: body }, { new: true })
         .then(todo => {
             if (!todo) {
-                return res.status(400).send(createError('base', 'ERRNOTODO'));
+                return res.status(404).send(createError('base', 'ERRNOTODO'));
             }
             res.send({ todo });
         })
