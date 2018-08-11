@@ -27,16 +27,18 @@ describe('src/server/routes/api/users.js', () => {
                 .send(user)
                 .expect(200)
                 .expect(res => {
-                    expect(res.body).toMatchObject({ email: user.email });
+                    expect(res.headers['x-auth']).toBeDefined();
+                    expect(res.body._id).toBeDefined();
+                    expect(res.body.email).toBe(user.email);
                 })
                 .end((err) => {
                     if (err) {
                         done(err);
                     }
-                    User.find({ email: user.email })
-                        .then(users => {
-                            expect(users).toHaveLength(1);
-                            expect(users[0]).toMatchObject({ email: user.email });
+                    User.findOne({ email: user.email })
+                        .then(res => {
+                            expect(res).toBeDefined();
+                            expect(res.password).not.toBe(user.password);
                             done();
                         }).catch(e => done(e));
                 })
@@ -63,5 +65,60 @@ describe('src/server/routes/api/users.js', () => {
                         }).catch(e => done(e));
                 })
         });
-    })
+        test('should not create a new user if email is in use', done => {
+            request(app)
+                .post('/api/v1/users')
+                .send({
+                    email: users[0].email,
+                    password: 'password'
+                })
+                .expect(400)
+                .expect(res => {
+                    expect(res.body).toMatchObject(createError('email', 'ERREMAILEXISTS'));
+                })
+                .end((err) => {
+                    if (err) {
+                        done(err);
+                    }
+                    User.find()
+                        .then(user => {
+                            expect(user).toHaveLength(2);
+                            done();
+                        }).catch(e => done(e));
+                })
+        });
+    });
+    describe('GET /api/v1/users/me', () => {
+        test('should return user if authenticated', done => {
+            const user = users[0];
+            request(app)
+                .get('/api/v1/users/me')
+                .set('x-auth', user.tokens[0].token)
+                .expect(200)
+                .expect(res => {
+                    expect(res.body._id).toBe(user._id.toHexString());
+                    expect(res.body.email).toBe(user.email);
+                })
+                .end(err => {
+                    if (err) {
+                        done(err);
+                    }
+                    done();
+                })
+        });
+        test('should return 401 if not authenticated', done => {
+            request(app)
+                .get('/api/v1/users/me')
+                .expect(401)
+                .expect(res => {
+                    expect(res.body).toMatchObject(createError('token', 'ERRNOAUTH'))
+                })
+                .end(err => {
+                    if (err) {
+                        done(err);
+                    }
+                    done();
+                })
+        });
+    });
 });

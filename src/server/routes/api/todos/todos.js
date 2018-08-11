@@ -11,9 +11,9 @@ const getTodos = (req, res) => {
                 todos
             });
         })
-        .catch(() => {
-            res.status(400).send(createError('base', 'ERRNOCREATE'));
-        })
+        .catch(err => {
+            res.status(500).send(err);
+        });
 };
 const createTodo = (req, res) => {
     const todo = new Todo({

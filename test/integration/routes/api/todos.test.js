@@ -65,7 +65,7 @@ describe('src/server/routes/api/todos.js', () => {
                    expect(res.body.todos).toHaveLength(2);
                })
                .end(done)
-       })
+       });
     });
     describe('GET /api/v1/todos/:id', () => {
         test('should return a todo object', done => {
