@@ -5,7 +5,7 @@ const express = require('express');
 const app = express();
 
 require('./express/configure-middleware')(app);
-require('./routes/api/todos')(app);
-require('./routes/api/users')(app);
+require('./routes/v1/todos')(app);
+require('./routes/v1/users')(app);
 
 module.exports = app;

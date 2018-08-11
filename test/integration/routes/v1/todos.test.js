@@ -13,12 +13,12 @@ afterAll(done => {
     mongoose.close(done);
 });
 
-describe('src/server/routes/api/todos.js', () => {
-    describe('POST /api/v1/todos', () => {
+describe('src/server/routes/v1/todos.js', () => {
+    describe('POST /v1/todos', () => {
         test('should create a new todo', done => {
             const text = 'Todo text';
             request(app)
-                .post('/api/v1/todos')
+                .post('/v1/todos')
                 .send({ text })
                 .expect(200)
                 .expect(res => {
@@ -38,7 +38,7 @@ describe('src/server/routes/api/todos.js', () => {
         });
         test('should not create a new todo with invalid data', done => {
             request(app)
-                .post('/api/v1/todos')
+                .post('/v1/todos')
                 .send({})
                 .expect(400)
                 .expect(res => {
@@ -56,10 +56,10 @@ describe('src/server/routes/api/todos.js', () => {
                 })
         });
     });
-    describe('GET /api/v1/todos', () => {
+    describe('GET /v1/todos', () => {
        test('should return all todos', done => {
            request(app)
-               .get('/api/v1/todos')
+               .get('/v1/todos')
                .expect(200)
                .expect(res => {
                    expect(res.body.todos).toHaveLength(2);
@@ -67,11 +67,11 @@ describe('src/server/routes/api/todos.js', () => {
                .end(done)
        });
     });
-    describe('GET /api/v1/todos/:id', () => {
+    describe('GET /v1/todos/:id', () => {
         test('should return a todo object', done => {
            const id = todos[0]._id.toHexString();
            request(app)
-               .get(`/api/v1/todos/${id}`)
+               .get(`/v1/todos/${id}`)
                .expect(200)
                .expect(res => {
                    expect(res.body.todo).toMatchObject({
@@ -83,7 +83,7 @@ describe('src/server/routes/api/todos.js', () => {
         test('should return a 404 if ID is not found', done => {
             const id = new ObjectID().toHexString();
             request(app)
-                .get(`/api/v1/todos/${id}`)
+                .get(`/v1/todos/${id}`)
                 .expect(404)
                 .expect(res => {
                     expect(res.body).toMatchObject(createError('base', 'ERRNOTODO'));
@@ -92,7 +92,7 @@ describe('src/server/routes/api/todos.js', () => {
         });
         test('should return a 404 if ID is not valid', done => {
             request(app)
-                .get(`/api/v1/todos/123`)
+                .get(`/v1/todos/123`)
                 .expect(404)
                 .expect(res => {
                     expect(res.body).toMatchObject(createError('base', 'ERRNOTODO'));
@@ -100,11 +100,11 @@ describe('src/server/routes/api/todos.js', () => {
                 .end(done)
         });
     });
-    describe('DELETE /api/v1/todos/:id', () => {
+    describe('DELETE /v1/todos/:id', () => {
         test('should delete a todo object', done => {
            const id = todos[0]._id.toHexString();
            request(app)
-               .delete(`/api/v1/todos/${id}`)
+               .delete(`/v1/todos/${id}`)
                .expect(200)
                .end((err) => {
                    if (err) {
@@ -120,7 +120,7 @@ describe('src/server/routes/api/todos.js', () => {
         test('should return a 404 if ID is not found', done => {
             const id = new ObjectID().toHexString();
             request(app)
-                .delete(`/api/v1/todos/${id}`)
+                .delete(`/v1/todos/${id}`)
                 .expect(404)
                 .expect(res => {
                     expect(res.body).toMatchObject(createError('base', 'ERRNOTODO'));
@@ -129,7 +129,7 @@ describe('src/server/routes/api/todos.js', () => {
         });
         test('should return a 404 if ID is not valid', done => {
             request(app)
-                .delete(`/api/v1/todos/123`)
+                .delete(`/v1/todos/123`)
                 .expect(404)
                 .expect(res => {
                     expect(res.body).toMatchObject(createError('base', 'ERRNOTODO'));
@@ -137,14 +137,14 @@ describe('src/server/routes/api/todos.js', () => {
                 .end(done)
         });
     });
-    describe('PATCH /api/v1/todos/:id', () => {
+    describe('PATCH /v1/todos/:id', () => {
         test('should update a todo object', done => {
             const id = todos[0]._id.toHexString();
             Todo.findById(id).then(todo => {
                 expect(todo).toMatchObject({ text: 'First test todo' });
             });
             request(app)
-                .patch(`/api/v1/todos/${id}`)
+                .patch(`/v1/todos/${id}`)
                 .send({ text: 'Hello there!' })
                 .expect(200)
                 .end((err) => {
@@ -163,7 +163,7 @@ describe('src/server/routes/api/todos.js', () => {
                 expect(todo).toMatchObject({ completed: false, completedAt: null });
             });
             request(app)
-                .patch(`/api/v1/todos/${id}`)
+                .patch(`/v1/todos/${id}`)
                 .send({ completed: true })
                 .expect(200)
                 .end((err) => {
@@ -183,7 +183,7 @@ describe('src/server/routes/api/todos.js', () => {
                 expect(todo).toMatchObject({ completed: false, completedAt: null });
             });
             request(app)
-                .patch(`/api/v1/todos/${id}`)
+                .patch(`/v1/todos/${id}`)
                 .send({ completed: true })
                 .expect(200)
                 .end((err) => {
@@ -200,7 +200,7 @@ describe('src/server/routes/api/todos.js', () => {
         test('should return a 404 if ID is not found', done => {
             const id = new ObjectID().toHexString();
             request(app)
-                .patch(`/api/v1/todos/${id}`)
+                .patch(`/v1/todos/${id}`)
                 .expect(404)
                 .expect(res => {
                     expect(res.body).toMatchObject(createError('base', 'ERRNOTODO'));
@@ -209,7 +209,7 @@ describe('src/server/routes/api/todos.js', () => {
         });
         test('should return a 404 if ID is not valid', done => {
             request(app)
-                .patch(`/api/v1/todos/123`)
+                .patch(`/v1/todos/123`)
                 .expect(404)
                 .expect(res => {
                     expect(res.body).toMatchObject(createError('base', 'ERRNOTODO'));

@@ -14,8 +14,8 @@ afterAll(done => {
     mongoose.close(done);
 });
 
-describe('src/server/routes/api/users.js', () => {
-    describe('POST /api/v1/users', () => {
+describe('src/server/routes/v1/users.js', () => {
+    describe('POST /v1/users', () => {
         test('should create a new user', done => {
             const user = {
                 email: 'edwin3@mailinator.com',
@@ -23,7 +23,7 @@ describe('src/server/routes/api/users.js', () => {
             };
 
             request(app)
-                .post('/api/v1/users')
+                .post('/v1/users')
                 .send(user)
                 .expect(200)
                 .expect(res => {
@@ -45,7 +45,7 @@ describe('src/server/routes/api/users.js', () => {
         });
         test('should not create a new user with invalid data', done => {
             request(app)
-                .post('/api/v1/users')
+                .post('/v1/users')
                 .send({})
                 .expect(400)
                 .expect(res => {
@@ -67,7 +67,7 @@ describe('src/server/routes/api/users.js', () => {
         });
         test('should not create a new user if email is in use', done => {
             request(app)
-                .post('/api/v1/users')
+                .post('/v1/users')
                 .send({
                     email: users[0].email,
                     password: 'password'
@@ -88,11 +88,11 @@ describe('src/server/routes/api/users.js', () => {
                 })
         });
     });
-    describe('GET /api/v1/users/me', () => {
+    describe('GET /v1/users/me', () => {
         test('should return user if authenticated', done => {
             const user = users[0];
             request(app)
-                .get('/api/v1/users/me')
+                .get('/v1/users/me')
                 .set('x-auth', user.tokens[0].token)
                 .expect(200)
                 .expect(res => {
@@ -108,7 +108,7 @@ describe('src/server/routes/api/users.js', () => {
         });
         test('should return 401 if not authenticated', done => {
             request(app)
-                .get('/api/v1/users/me')
+                .get('/v1/users/me')
                 .expect(401)
                 .expect(res => {
                     expect(res.body).toMatchObject(createError('token', 'ERRNOAUTH'))
