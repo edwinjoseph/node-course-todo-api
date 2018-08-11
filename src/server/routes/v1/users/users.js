@@ -7,9 +7,7 @@ const createUser = (req, res) => {
     const user = new User(body);
 
     user.save()
-        .then(() => {
-            return user.generateAuthToken();
-        })
+        .then(() => user.generateAuthToken())
         .then(token => {
             res.header('x-auth', token).send(user);
         })
@@ -22,7 +20,22 @@ const getUser = (req, res) => {
     res.send(req.user);
 };
 
+const logIn = (req, res) => {
+    const body = pick(req.body, ['email', 'password']);
+    User.findByCredentials(body.email, body.password)
+        .then(user => {
+            user.generateAuthToken()
+                .then(token => {
+                    res.header('x-auth', token).send(user);
+                })
+        })
+        .catch(err => {
+            res.status(400).send(err);
+        })
+};
+
 module.exports = {
     createUser,
-    getUser
+    getUser,
+    logIn
 };
