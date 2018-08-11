@@ -21,13 +21,7 @@ const users = [
     {
         _id: userTwoId,
         email: "edwin2@mailinator.com",
-        password: "password2",
-        tokens: [
-            {
-                access: 'auth',
-                token: jwt.sign({ _id: userTwoId, auth: 'access' }, 'oaKdl9Elgj').toString()
-            }
-        ]
+        password: "password2"
     }
 ];
 const todos = [

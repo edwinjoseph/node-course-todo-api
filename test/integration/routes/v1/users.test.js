@@ -1,5 +1,4 @@
 const request = require('supertest');
-const { ObjectID } = require('mongodb');
 const merge = require('lodash/merge');
 
 const mongoose = require('../../../../src/server/db/mongoose');
@@ -119,6 +118,53 @@ describe('src/server/routes/v1/users.js', () => {
                     }
                     done();
                 })
+        });
+    });
+    describe('POST /v1/users/login', () => {
+        test('should login user and return auth token', done => {
+            const user = users[1];
+            request(app)
+                .post('/v1/users/login')
+                .send({ email: user.email, password: user.password })
+                .expect(200)
+                .expect(res => {
+                    expect(res.headers['x-auth']).toBeDefined();
+
+                })
+                .end((err, res) => {
+                   if (err) {
+                       done(err);
+                   }
+                    User.findById(user._id)
+                        .then(usr => {
+                            expect(usr.tokens[0]).toMatchObject({
+                                access: 'auth',
+                                token: res.headers['x-auth']
+                            });
+                            done();
+                        }).catch(e => done(e));
+                });
+        });
+        test('should reject invalid login ', done => {
+            const user = users[1];
+            request(app)
+                .post('/v1/users/login')
+                .send({ email: user.email, password: 'abc123' })
+                .expect(400)
+                .expect(res => {
+                    expect(res.headers['x-auth']).toBeUndefined();
+
+                })
+                .end(err => {
+                    if (err) {
+                        done(err);
+                    }
+                    User.findById(user._id)
+                        .then(usr => {
+                            expect(usr.tokens.length).toBe(0);
+                            done();
+                        }).catch(e => done(e));
+                });
         });
     });
 });
