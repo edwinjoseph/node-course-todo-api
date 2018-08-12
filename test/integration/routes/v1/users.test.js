@@ -167,4 +167,23 @@ describe('src/server/routes/v1/users.js', () => {
                 });
         });
     });
+    describe('POST /v1/users/logout', () => {
+        test('should remove auth token on logout', done => {
+            const user = users[0];
+            request(app)
+                .post('/v1/users/logout')
+                .set('x-auth', user.tokens[0].token)
+                .expect(200)
+                .end(err => {
+                    if (err) {
+                        done(err);
+                    }
+                    User.findById(user._id)
+                        .then(usr => {
+                            expect(usr.tokens.length).toBe(0);
+                            done();
+                        }).catch(e => done(e));
+                })
+        });
+    })
 });
