@@ -38,8 +38,8 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.methods = {
     toJSON: function () {
-      let user = this;
-      let userObject = user.toObject();
+      const user = this;
+      const userObject = user.toObject();
 
       return pick(userObject, ['_id', 'email']);
     },
@@ -53,6 +53,15 @@ UserSchema.methods = {
         return user.save().then(() => {
             return token;
         });
+    },
+    removeToken: function (token) {
+        const user = this;
+
+        return user.update({
+            $pull: {
+                tokens: { token }
+            }
+        })
     }
 };
 

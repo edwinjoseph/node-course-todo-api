@@ -1,4 +1,4 @@
-const { createUser, getUser, logIn } = require('./users.js');
+const { createUser, getUser, logIn, logOut } = require('./users.js');
 const authenticate = require('../../../middleware/authenticate');
 
 module.exports = app => {
@@ -11,5 +11,9 @@ module.exports = app => {
     );
     app.post('/v1/users/login',
         logIn
+    );
+    app.post('/v1/users/logout',
+        authenticate,
+        logOut
     );
 };
